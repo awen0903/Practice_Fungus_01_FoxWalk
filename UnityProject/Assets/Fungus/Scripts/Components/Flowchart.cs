@@ -230,12 +230,6 @@ namespace Fungus
             // It shouldn't happen but it seemed to occur for a user on the forum 
             variables.RemoveAll(item => item == null);
 
-            if (selectedBlocks == null) selectedBlocks = new List<Block>();
-            if (selectedCommands == null) selectedCommands = new List<Command>();
-
-            selectedBlocks.RemoveAll(item => item == null);
-            selectedCommands.RemoveAll(item => item == null);
-
             var allVariables = GetComponents<Variable>();
             for (int i = 0; i < allVariables.Length; i++)
             {
@@ -533,13 +527,13 @@ namespace Fungus
 
             if (block == null)
             {
-                Debug.LogError("Block " + blockName  + " does not exist");
+                Debug.LogError("Block " + blockName  + "does not exist");
                 return;
             }
 
             if (!ExecuteBlock(block))
             {
-                Debug.LogWarning("Block " + blockName  + " failed to execute");
+                Debug.LogWarning("Block " + blockName  + "failed to execute");
             }
         }
             
@@ -552,7 +546,7 @@ namespace Fungus
 
             if (block == null)
             {
-                Debug.LogError("Block " + blockName  + " does not exist");
+                Debug.LogError("Block " + blockName  + "does not exist");
                 return;
             }
 
@@ -1135,19 +1129,9 @@ namespace Fungus
         /// </summary>
         public virtual void ClearSelectedBlocks()
         {
-            if(selectedBlocks == null)
+            foreach (var item in selectedBlocks)
             {
-                selectedBlocks = new List<Block>();
-            }
-
-            for (int i = 0; i < selectedBlocks.Count; i++)
-            {
-                var item = selectedBlocks[i];
-
-                if(item != null)
-                {
-                    item.IsSelected = false;
-                }
+                item.IsSelected = false;
             }
             selectedBlocks.Clear();
         }

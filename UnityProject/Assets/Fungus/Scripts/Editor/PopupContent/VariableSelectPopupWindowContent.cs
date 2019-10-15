@@ -12,22 +12,12 @@ namespace Fungus.EditorUtils
     public class VariableSelectPopupWindowContent : BasePopupWindowContent
     {
         static readonly int POPUP_WIDTH = 200, POPUP_HEIGHT = 200;
-        static List<System.Type> _variableTypes;
-        static List<System.Type> VariableTypes
-        {
-            get
-            {
-                if (_variableTypes == null || _variableTypes.Count == 0)
-                    CacheVariableTypes();
-
-                return _variableTypes;
-            }
-        }
+        static List<System.Type> types;
 
         static void CacheVariableTypes()
         {
             var derivedType = typeof(Variable);
-            _variableTypes = EditorExtensions.FindDerivedTypes(derivedType)
+            types = EditorExtensions.FindDerivedTypes(derivedType)
                 .Where(x => !x.IsAbstract && derivedType.IsAssignableFrom(x))
                 .ToList();
         }
@@ -40,8 +30,13 @@ namespace Fungus.EditorUtils
 
         protected override void PrepareAllItems()
         {
+            if(types == null || types.Count == 0)
+            {
+                CacheVariableTypes();
+            }
+
             int i = 0;
-            foreach (var item in VariableTypes)
+            foreach (var item in types)
             {
                 VariableInfoAttribute variableInfo = VariableEditor.GetVariableInfo(item);
                 if (variableInfo != null)
@@ -55,13 +50,13 @@ namespace Fungus.EditorUtils
 
         protected override void SelectByOrigIndex(int index)
         {
-            AddVariable(VariableTypes[index]);
+            AddVariable(types[index]);
         }
 
         static public void DoAddVariable(Rect position, string currentHandlerName, Flowchart flowchart)
         {
             curFlowchart = flowchart;
-            if (!FungusEditorPreferences.useLegacyMenus)
+            if (FungusEditorPreferences.useExperimentalMenus)
             {
                 //new method
                 VariableSelectPopupWindowContent win = new VariableSelectPopupWindowContent(currentHandlerName, POPUP_WIDTH, POPUP_HEIGHT);
@@ -76,7 +71,7 @@ namespace Fungus.EditorUtils
             GenericMenu menu = new GenericMenu();
 
             // Add variable types without a category
-            foreach (var type in VariableTypes)
+            foreach (var type in types)
             {
                 VariableInfoAttribute variableInfo = VariableEditor.GetVariableInfo(type);
                 if (variableInfo == null ||
@@ -91,7 +86,7 @@ namespace Fungus.EditorUtils
             }
 
             // Add types with a category
-            foreach (var type in VariableTypes)
+            foreach (var type in types)
             {
                 VariableInfoAttribute variableInfo = VariableEditor.GetVariableInfo(type);
                 if (variableInfo == null ||
